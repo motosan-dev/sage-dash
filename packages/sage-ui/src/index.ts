@@ -17,11 +17,16 @@ export type {
 export { SageApiClient } from "./lib/api.js";
 export type { ListClientsParams } from "./lib/api.js";
 
+// ── Context ──
+export { SageApiProvider, useSageApi } from "./context/sage-api-provider.js";
+export type { SageApiProviderProps } from "./context/sage-api-provider.js";
+
 // ── Hooks ──
 export { useConfig } from "./hooks/use-config.js";
 export { useClients } from "./hooks/use-clients.js";
 export { useAnalytics } from "./hooks/use-analytics.js";
 export { useClient } from "./hooks/use-client.js";
+export { useHandoffs } from "./hooks/use-handoffs.js";
 
 // ── Utilities ──
 export function cn(...classes: (string | undefined | null | false)[]): string {
