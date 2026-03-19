@@ -14,6 +14,7 @@ import type {
 
 export interface ListClientsParams {
   stage?: string;
+  source?: string;
   search?: string;
   limit?: number;
   offset?: number;
