@@ -27,6 +27,7 @@ export { useClients } from "./hooks/use-clients.js";
 export { useAnalytics } from "./hooks/use-analytics.js";
 export { useClient } from "./hooks/use-client.js";
 export { useHandoffs } from "./hooks/use-handoffs.js";
+export { useClientMutations } from "./hooks/use-client-mutations.js";
 
 // ── Utilities ──
 export function cn(...classes: (string | undefined | null | false)[]): string {

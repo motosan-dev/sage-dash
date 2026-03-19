@@ -3,6 +3,7 @@ import { RootLayout } from "@/layouts/root-layout";
 import DashboardPage from "@/pages/dashboard";
 import PipelinePage from "@/pages/pipeline";
 import ClientsPage from "@/pages/clients";
+import ClientDetailPage from "@/pages/client-detail";
 import QuotesPage from "@/pages/quotes";
 import SettingsPage from "@/pages/settings";
 
@@ -13,6 +14,7 @@ export function AppRouter() {
         <Route index element={<DashboardPage />} />
         <Route path="pipeline" element={<PipelinePage />} />
         <Route path="clients" element={<ClientsPage />} />
+        <Route path="clients/:id" element={<ClientDetailPage />} />
         <Route path="quotes" element={<QuotesPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
