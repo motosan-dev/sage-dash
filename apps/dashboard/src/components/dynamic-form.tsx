@@ -16,16 +16,20 @@ import {
 
 export interface DynamicFormProps {
   fields: FieldDef[];
+  initialValues?: Record<string, unknown>;
   onSubmit: (values: Record<string, unknown>) => void;
   isSubmitting?: boolean;
 }
 
 export function DynamicForm({
   fields,
+  initialValues,
   onSubmit,
   isSubmitting,
 }: DynamicFormProps) {
-  const [values, setValues] = useState<Record<string, unknown>>({});
+  const [values, setValues] = useState<Record<string, unknown>>(
+    initialValues ?? {},
+  );
 
   const setValue = useCallback((name: string, value: unknown) => {
     setValues((prev) => ({ ...prev, [name]: value }));

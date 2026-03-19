@@ -116,6 +116,33 @@ export class SageApiClient {
     return data;
   }
 
+  // ── Docs ──
+
+  async updateDoc(
+    clientId: string,
+    docName: string,
+    update: Partial<DocItem>,
+  ): Promise<DocItem> {
+    const { data } = await this.http.patch<DocItem>(
+      `/clients/${clientId}/docs/${encodeURIComponent(docName)}`,
+      update,
+    );
+    return data;
+  }
+
+  // ── Payments ──
+
+  async createPayment(
+    clientId: string,
+    input: Omit<PaymentItem, "status"> & { status?: string },
+  ): Promise<PaymentItem> {
+    const { data } = await this.http.post<PaymentItem>(
+      `/clients/${clientId}/payments`,
+      input,
+    );
+    return data;
+  }
+
   // ── Messages ──
 
   async sendReply(clientId: string, text: string): Promise<void> {
