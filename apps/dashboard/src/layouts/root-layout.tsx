@@ -15,6 +15,10 @@ export function RootLayout() {
     setMobileOpen(true);
   }, []);
 
+  const handleMobileNavigate = useCallback(() => {
+    setMobileOpen(false);
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Desktop sidebar */}
@@ -26,7 +30,7 @@ export function RootLayout() {
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetContent side="left" className="w-60 p-0">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SidebarContent />
+          <SidebarContent onNavigate={handleMobileNavigate} />
         </SheetContent>
       </Sheet>
 
