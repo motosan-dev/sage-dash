@@ -1,0 +1,8 @@
+services:
+  sage-dash:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: http://sage-agent:3000
+    ports:
+      - "4000:80"
