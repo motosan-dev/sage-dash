@@ -2,14 +2,17 @@ import axios, { type AxiosInstance } from "axios";
 import type {
   Client,
   CreateClientInput,
+  CreateQuoteInput,
   DashboardMetrics,
   DocItem,
   FieldDef,
   HandoffItem,
   Message,
   PaymentItem,
+  Quote,
   Stage,
   TimelineEvent,
+  UpdateQuoteInput,
 } from "../types/index.js";
 
 export interface ListClientsParams {
@@ -154,5 +157,31 @@ export class SageApiClient {
       `/clients/${clientId}/messages`,
     );
     return data;
+  }
+
+  // ── Quotes ──
+
+  async listQuotes(): Promise<Quote[]> {
+    const { data } = await this.http.get<Quote[]>("/quotes");
+    return data;
+  }
+
+  async getQuote(id: string): Promise<Quote> {
+    const { data } = await this.http.get<Quote>(`/quotes/${id}`);
+    return data;
+  }
+
+  async createQuote(input: CreateQuoteInput): Promise<Quote> {
+    const { data } = await this.http.post<Quote>("/quotes", input);
+    return data;
+  }
+
+  async updateQuote(id: string, input: UpdateQuoteInput): Promise<Quote> {
+    const { data } = await this.http.patch<Quote>(`/quotes/${id}`, input);
+    return data;
+  }
+
+  async sendQuoteToLine(id: string): Promise<void> {
+    await this.http.post(`/quotes/${id}/send`);
   }
 }

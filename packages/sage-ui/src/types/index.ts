@@ -48,6 +48,35 @@ export interface QuoteItem {
   converted?: number;
 }
 
+export type QuoteStatus = "draft" | "sent" | "accepted" | "expired";
+
+export interface Quote {
+  id: string;
+  client_id: string;
+  client_name: string;
+  items: QuoteItem[];
+  status: QuoteStatus;
+  note: string;
+  total: number;
+  currency: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateQuoteInput {
+  client_id: string;
+  items?: QuoteItem[];
+  note?: string;
+  currency?: string;
+}
+
+export interface UpdateQuoteInput {
+  items?: QuoteItem[];
+  note?: string;
+  status?: QuoteStatus;
+  currency?: string;
+}
+
 export interface DocItem {
   name: string;
   required: boolean;
