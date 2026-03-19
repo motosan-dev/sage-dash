@@ -5,6 +5,7 @@ import PipelinePage from "@/pages/pipeline";
 import ClientsPage from "@/pages/clients";
 import ClientDetailPage from "@/pages/client-detail";
 import QuotesPage from "@/pages/quotes";
+import QuoteDetailPage from "@/pages/quote-detail";
 import SettingsPage from "@/pages/settings";
 
 export function AppRouter() {
@@ -16,6 +17,7 @@ export function AppRouter() {
         <Route path="clients" element={<ClientsPage />} />
         <Route path="clients/:id" element={<ClientDetailPage />} />
         <Route path="quotes" element={<QuotesPage />} />
+        <Route path="quotes/:id" element={<QuoteDetailPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
     </Routes>
