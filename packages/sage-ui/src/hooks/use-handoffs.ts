@@ -27,6 +27,8 @@ export function useHandoffs(api: SageApiClient) {
   return {
     handoffs: handoffsQuery.data ?? [],
     isLoading: handoffsQuery.isLoading,
+    error: handoffsQuery.error,
+    refetch: handoffsQuery.refetch,
     handoffToHuman: handoffToHumanMutation.mutateAsync,
     handoffToAi: handoffToAiMutation.mutateAsync,
   };

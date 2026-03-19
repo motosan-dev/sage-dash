@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSageApi, useQuote } from "@motosan/sage-ui";
 import type { QuoteItem } from "@motosan/sage-ui";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { QuoteBuilder } from "@/components/quote-builder";
@@ -47,8 +48,11 @@ export default function QuoteDetailPage() {
     try {
       await updateQuote({ items, note });
       setIsDirty(false);
+      toast.success("報價已儲存");
     } catch (error) {
-      console.error(error);
+      toast.error("儲存報價失敗", {
+        description: error instanceof Error ? error.message : "請稍後再試",
+      });
     }
   }, [items, note, updateQuote]);
 
@@ -59,14 +63,19 @@ export default function QuoteDetailPage() {
         await updateQuote({ items, note });
         setIsDirty(false);
       } catch (error) {
-        console.error(error);
+        toast.error("儲存報價失敗", {
+          description: error instanceof Error ? error.message : "請稍後再試",
+        });
         return;
       }
     }
     try {
       await sendToLine();
+      toast.success("報價已傳送至 LINE");
     } catch (error) {
-      console.error(error);
+      toast.error("傳送至 LINE 失敗", {
+        description: error instanceof Error ? error.message : "請稍後再試",
+      });
     }
   }, [isDirty, items, note, updateQuote, sendToLine]);
 

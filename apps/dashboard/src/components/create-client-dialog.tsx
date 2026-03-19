@@ -5,6 +5,7 @@ import {
   useClients,
   type CreateClientInput,
 } from "@motosan/sage-ui";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +47,12 @@ export function CreateClientDialog() {
         };
         await createClient(input);
         setOpen(false);
+        toast.success("客戶已新增");
+      } catch (error) {
+        toast.error("新增客戶失敗", {
+          description:
+            error instanceof Error ? error.message : "請稍後再試",
+        });
       } finally {
         setIsSubmitting(false);
       }

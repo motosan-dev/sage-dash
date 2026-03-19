@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSageApi, useConfig, useClients } from "@motosan/sage-ui";
 import type { ListClientsParams } from "@motosan/sage-ui";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,8 @@ import {
 } from "@/components/ui/select";
 import { ClientTable } from "@/components/client-table";
 import { CreateClientDialog } from "@/components/create-client-dialog";
+import { QueryError } from "@/components/query-error";
+import { EmptyState } from "@/components/empty-state";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -62,14 +65,21 @@ export default function ClientsPage() {
     [debouncedSearch, stageFilter, sourceFilter, offset],
   );
 
-  const { clients, isLoading: clientsLoading, moveStage } = useClients(
-    api,
-    filters,
-  );
+  const {
+    clients,
+    isLoading: clientsLoading,
+    error: clientsError,
+    refetch: refetchClients,
+    moveStage,
+  } = useClients(api, filters);
 
   const handleStageChange = useCallback(
     (clientId: string, stageId: string) => {
-      moveStage({ id: clientId, stageId });
+      moveStage({ id: clientId, stageId }).catch((err) => {
+        toast.error("更新階段失敗", {
+          description: err instanceof Error ? err.message : "請稍後再試",
+        });
+      });
     },
     [moveStage],
   );
@@ -161,6 +171,13 @@ export default function ClientsPage() {
       {/* Table */}
       {isLoading ? (
         <TableSkeleton />
+      ) : clientsError ? (
+        <QueryError
+          message="載入客戶資料時發生錯誤"
+          onRetry={() => refetchClients()}
+        />
+      ) : clients.length === 0 ? (
+        <EmptyState message="還沒有客戶，點選 + 新增" />
       ) : (
         <ClientTable
           clients={clients}

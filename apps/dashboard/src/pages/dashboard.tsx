@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
   useSageApi,
   useAnalytics,
@@ -19,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { QueryError } from "@/components/query-error";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -345,8 +347,42 @@ function PendingHandoffsSkeleton() {
 
 export default function DashboardPage() {
   const api = useSageApi();
-  const { metrics, isLoading: metricsLoading } = useAnalytics(api);
-  const { handoffs, isLoading: handoffsLoading } = useHandoffs(api);
+  const {
+    metrics,
+    isLoading: metricsLoading,
+    error: metricsError,
+    refetch: refetchMetrics,
+  } = useAnalytics(api);
+  const {
+    handoffs,
+    isLoading: handoffsLoading,
+    error: handoffsError,
+    refetch: refetchHandoffs,
+  } = useHandoffs(api);
+
+  const error = metricsError || handoffsError;
+
+  const handleRetry = useCallback(() => {
+    refetchMetrics();
+    refetchHandoffs();
+  }, [refetchMetrics, refetchHandoffs]);
+
+  if (!metricsLoading && !handoffsLoading && error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Overview of your consulting pipeline.
+          </p>
+        </div>
+        <QueryError
+          message="載入儀表板資料時發生錯誤"
+          onRetry={handleRetry}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -20,6 +20,8 @@ export function useQuotes(api: SageApiClient) {
   return {
     quotes: quotesQuery.data ?? [],
     isLoading: quotesQuery.isLoading,
+    error: quotesQuery.error,
+    refetch: quotesQuery.refetch,
     createQuote: createQuoteMutation.mutateAsync,
     isCreating: createQuoteMutation.isPending,
   };
