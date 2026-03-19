@@ -19,8 +19,11 @@ import {
   useHandoffs,
   type Client,
 } from "@motosan/sage-ui";
+import { toast } from "sonner";
 import { PipelineColumn } from "@/components/pipeline-column";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { QueryError } from "@/components/query-error";
+import { EmptyState } from "@/components/empty-state";
 
 // ---------------------------------------------------------------------------
 // Skeleton
@@ -80,9 +83,25 @@ function DragOverlayCard({ client }: { client: Client }) {
 
 export default function PipelinePage() {
   const api = useSageApi();
-  const { stages, isLoading: stagesLoading } = useConfig(api);
-  const { clients, isLoading: clientsLoading, moveStage } = useClients(api);
-  const { handoffs, isLoading: handoffsLoading } = useHandoffs(api);
+  const {
+    stages,
+    isLoading: stagesLoading,
+    error: stagesError,
+    refetch: refetchStages,
+  } = useConfig(api);
+  const {
+    clients,
+    isLoading: clientsLoading,
+    error: clientsError,
+    refetch: refetchClients,
+    moveStage,
+  } = useClients(api);
+  const {
+    handoffs,
+    isLoading: handoffsLoading,
+    error: handoffsError,
+    refetch: refetchHandoffs,
+  } = useHandoffs(api);
 
   const [activeClient, setActiveClient] = useState<Client | null>(null);
 
@@ -146,12 +165,23 @@ export default function PipelinePage() {
 
       if (!targetStageId || targetStageId === client.stage_id) return;
 
-      moveStage({ id: clientId, stageId: targetStageId });
+      moveStage({ id: clientId, stageId: targetStageId }).catch((err) => {
+        toast.error("移動客戶失敗", {
+          description: err instanceof Error ? err.message : "請稍後再試",
+        });
+      });
     },
     [clients, stages, moveStage],
   );
 
   const isLoading = stagesLoading || clientsLoading || handoffsLoading;
+  const error = stagesError || clientsError || handoffsError;
+
+  const handleRetry = useCallback(() => {
+    refetchStages();
+    refetchClients();
+    refetchHandoffs();
+  }, [refetchStages, refetchClients, refetchHandoffs]);
 
   return (
     <div className="space-y-6">
@@ -164,6 +194,13 @@ export default function PipelinePage() {
 
       {isLoading ? (
         <BoardSkeleton />
+      ) : error ? (
+        <QueryError
+          message="載入 Pipeline 資料時發生錯誤"
+          onRetry={handleRetry}
+        />
+      ) : clients.length === 0 ? (
+        <EmptyState message="還沒有客戶，點選 + 新增" />
       ) : (
         <DndContext
           sensors={sensors}

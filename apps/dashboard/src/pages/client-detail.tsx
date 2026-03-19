@@ -8,6 +8,7 @@ import {
   useHandoffs,
 } from "@motosan/sage-ui";
 import type { DocItem } from "@motosan/sage-ui";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,24 +54,49 @@ export default function ClientDetailPage() {
 
   const handleStageChange = useCallback(
     (stageId: string) => {
-      mutations.moveStage(stageId);
+      mutations.moveStage(stageId).catch((err: unknown) => {
+        toast.error("更新階段失敗", {
+          description: err instanceof Error ? err.message : "請稍後再試",
+        });
+      });
     },
     [mutations],
   );
 
   const handleUpdateDoc = useCallback(
     async (docName: string, status: DocItem["status"]) => {
-      await mutations.updateDoc({ docName, update: { status } });
+      try {
+        await mutations.updateDoc({ docName, update: { status } });
+        toast.success("文件狀態已更新");
+      } catch (err) {
+        toast.error("更新文件失敗", {
+          description: err instanceof Error ? err.message : "請稍後再試",
+        });
+      }
     },
     [mutations],
   );
 
   const handleHandoffToHuman = useCallback(async () => {
-    await mutations.handoffToHuman();
+    try {
+      await mutations.handoffToHuman();
+      toast.success("已接管客戶");
+    } catch (err) {
+      toast.error("接管失敗", {
+        description: err instanceof Error ? err.message : "請稍後再試",
+      });
+    }
   }, [mutations]);
 
   const handleHandoffToAi = useCallback(async () => {
-    await mutations.handoffToAi();
+    try {
+      await mutations.handoffToAi();
+      toast.success("已交回 AI");
+    } catch (err) {
+      toast.error("交回 AI 失敗", {
+        description: err instanceof Error ? err.message : "請稍後再試",
+      });
+    }
   }, [mutations]);
 
   if (isLoading) {

@@ -12,6 +12,7 @@ import {
   useClients,
   type Quote,
 } from "@motosan/sage-ui";
+import { toast } from "sonner";
 import { QuoteStatusBadge } from "@/components/quote-status-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +38,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { QueryError } from "@/components/query-error";
+import { EmptyState } from "@/components/empty-state";
 
 // ---------------------------------------------------------------------------
 // Formatters
@@ -67,7 +70,14 @@ export { QuoteStatusBadge } from "@/components/quote-status-badge";
 export default function QuotesPage() {
   const api = useSageApi();
   const navigate = useNavigate();
-  const { quotes, isLoading, createQuote, isCreating } = useQuotes(api);
+  const {
+    quotes,
+    isLoading,
+    error: quotesError,
+    refetch: refetchQuotes,
+    createQuote,
+    isCreating,
+  } = useQuotes(api);
   const { clients } = useClients(api);
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -79,9 +89,13 @@ export default function QuotesPage() {
       const newQuote = await createQuote({ client_id: selectedClientId });
       setDialogOpen(false);
       setSelectedClientId("");
+      toast.success("報價已建立");
       navigate(`/quotes/${newQuote.id}`);
     } catch (error) {
-      console.error(error);
+      toast.error("建立報價失敗", {
+        description:
+          error instanceof Error ? error.message : "請稍後再試",
+      });
     }
   }, [selectedClientId, createQuote, navigate]);
 
@@ -232,28 +246,36 @@ export default function QuotesPage() {
         </Dialog>
       </div>
 
-      {/* Quotes table */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length > 0 ? (
-              table.getRowModel().rows.map((row) => (
+      {/* Error state */}
+      {quotesError ? (
+        <QueryError
+          message="載入報價資料時發生錯誤"
+          onRetry={() => refetchQuotes()}
+        />
+      ) : quotes.length === 0 ? (
+        <EmptyState message="還沒有報價" />
+      ) : (
+        /* Quotes table */
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   className="cursor-pointer hover:bg-muted/50"
@@ -277,20 +299,11 @@ export default function QuotesPage() {
                     </TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No quotes found. Click &quot;+ 新增報價&quot; to create one.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }

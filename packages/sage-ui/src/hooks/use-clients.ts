@@ -36,6 +36,8 @@ export function useClients(api: SageApiClient, filters?: ListClientsParams) {
   return {
     clients: clientsQuery.data ?? [],
     isLoading: clientsQuery.isLoading,
+    error: clientsQuery.error,
+    refetch: clientsQuery.refetch,
     createClient: createClientMutation.mutateAsync,
     updateClient: updateClientMutation.mutateAsync,
     moveStage: moveStageMutation.mutateAsync,

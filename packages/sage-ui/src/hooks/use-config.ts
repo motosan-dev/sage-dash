@@ -17,5 +17,10 @@ export function useConfig(api: SageApiClient) {
     stages: stagesQuery.data ?? [],
     clientFields: fieldsQuery.data ?? [],
     isLoading: stagesQuery.isLoading || fieldsQuery.isLoading,
+    error: stagesQuery.error || fieldsQuery.error,
+    refetch: () => {
+      stagesQuery.refetch();
+      fieldsQuery.refetch();
+    },
   };
 }

@@ -11,5 +11,7 @@ export function useAnalytics(api: SageApiClient) {
   return {
     metrics: query.data ?? null,
     isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
   };
 }
